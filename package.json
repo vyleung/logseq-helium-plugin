@@ -1,0 +1,28 @@
+{
+  "name": "logseq-helium-plugin",
+  "version": "1.0.0",
+  "description": "Float videos for better note-taking",
+  "main": "dist/index.html",
+  "targets": {
+    "main": false
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build --no-source-maps src/index.html --public-url ./"
+  },
+  "keywords": [],
+  "author": "vyleung",
+  "license": "MIT",
+  "dependencies": {
+    "@logseq/libs": "^0.0.1-alpha.35",
+    "interactjs": "^1.10.11"
+  },
+  "logseq": {
+    "id": "logseq-helium-plugin",
+    "title": "logseq-helium-plugin",
+    "icon": "./icon.png"
+  },
+  "devDependencies": {
+    "parcel": "^2.4.1"
+  }
+}
