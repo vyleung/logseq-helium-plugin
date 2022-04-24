@@ -20,7 +20,9 @@
 1. Click the 3 dots in the righthand corner → `Settings` → `Advanced` → Enable `Developer mode` and `Plug-in system`
 2. Click the 3 dots in the righthand corner → `Plugins` – OR – Use keyboard shortcut `Esc t p`
 
-### Load plugin via the marketplace (not available yet)
+### Load plugin via the marketplace (recommended)
+1. Click the 3 dots in the righthand corner → `Plugins` – OR – Use keyboard shortcut `Esc t p`
+2. Go to the `Marketplace` tab and search for `Helium` → Click `Install`
 
 ### Load plugin manually
 1. Download the [latest release](https://github.com/vyleung/logseq-helium-plugin/releases) of the plugin (e.g logseq-helium-plugin-v.1.0.0.zip) from Github
