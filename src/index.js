@@ -1,16 +1,36 @@
 import "@logseq/libs";
 
+const settings = [
+  {
+    key: "VideoPosition",
+    title: "Edit the top position of the floated video",
+    description: "Default: -3em. To move the video lower, insert a more positive number (e.g. -2em). To move the video higher, insert a more negative number (e.g. -4em)",
+    type: "string",
+    default: "-3em"
+  },
+  {
+    key: "IconPosition",
+    title: "Edit the right position of the balloon icon next to the floated video",
+    description: "Default: -2.5em. To move the balloon icon closer to the video (toward the left), insert a more positive number (e.g. -1.5em). To move the balloon icon further away from the video (toward the right), insert a more negative number (e.g. -3.5em)",
+    type: "string",
+    default: "-2.5em"
+  }
+]
+logseq.useSettingsSchema(settings);
+
 let block_uuid;
 const block_id_prefix = `div[id^='ls-block']`;
 
 function startFloat(e) {
   block_uuid = e.uuid;
+  const video_position = logseq.settings.VideoPosition;
+  const icon_position = logseq.settings.IconPosition;
 
   // option 1: display balloon icon above the top right corner of the video
   logseq.provideUI ({
     key: "helium",
     path: `${block_id_prefix}[id$='${block_uuid}'] > .flex.flex-row.pr-2`,
-    template: `<a class="helium" data-helium-id="${block_uuid}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:-2.25em;">
+    template: `<a class="helium" data-helium-id="${block_uuid}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:${icon_position};">
       <svg width="2.5em" height="2.5em" viewBox="0 0 72 72" id="emoji" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <g id="color">
           <polygon fill="#D22F27" points="33.9763,42.6906 34.0061,49.1497 34.0359,55.6089 28.1166,51.8019 22.1972,47.995 28.0868,45.3428"/>
@@ -34,7 +54,7 @@ function startFloat(e) {
   logseq.provideStyle(`
     ${block_id_prefix}[id$='${block_uuid}'] > .flex.flex-row.pr-2 {
       position: sticky;
-      top: -3em;
+      top: ${video_position};
       z-index: 5;
     }
   `);
@@ -67,7 +87,7 @@ function startFloat(e) {
   logseq.provideStyle(`
     ${block_id_prefix}[id$='${block_uuid}'] {
       position: sticky;
-      top: -3em;
+      top: ${video_position};
       z-index: 5;
     }
   `);
