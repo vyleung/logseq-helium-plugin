@@ -18,19 +18,18 @@ const settings = [
 ]
 logseq.useSettingsSchema(settings);
 
-let block_uuid;
 const block_id_prefix = `div[id^='ls-block']`;
 
 function startFloat(e) {
-  block_uuid = e.uuid;
+  let block_uuid_start = e.uuid;
   const video_position = logseq.settings.VideoPosition;
   const icon_position = logseq.settings.IconPosition;
 
   // option 1: display balloon icon above the top right corner of the video
   logseq.provideUI ({
     key: "helium",
-    path: `${block_id_prefix}[id$='${block_uuid}'] > .flex.flex-row.pr-2`,
-    template: `<a class="helium" data-helium-id="${block_uuid}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:${icon_position};">
+    path: `${block_id_prefix}[id$='${block_uuid_start}'] > .flex.flex-row.pr-2`,
+    template: `<a class="helium" data-helium-id="${block_uuid_start}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:${icon_position};">
       <svg width="2.5em" height="2.5em" viewBox="0 0 72 72" id="emoji" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <g id="color">
           <polygon fill="#D22F27" points="33.9763,42.6906 34.0061,49.1497 34.0359,55.6089 28.1166,51.8019 22.1972,47.995 28.0868,45.3428"/>
@@ -52,18 +51,19 @@ function startFloat(e) {
 
   // option 1: float the video
   logseq.provideStyle(`
-    ${block_id_prefix}[id$='${block_uuid}'] > .flex.flex-row.pr-2 {
+    ${block_id_prefix}[id$='${block_uuid_start}'] > .flex.flex-row.pr-2 {
       position: sticky;
       top: ${video_position};
       z-index: 5;
+      background-color: var(--ls-primary-background-color);
     }
   `);
 
   // option 2: display balloon icon above the top right corner of the video
   logseq.provideUI ({
     key: "helium",
-    path: `${block_id_prefix}[id$='${block_uuid}']`,
-    template: `<a class="helium" data-helium-id="${block_uuid}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:-2.25em;">
+    path: `${block_id_prefix}[id$='${block_uuid_start}']`,
+    template: `<a class="helium" data-helium-id="${block_uuid_start}" data-on-click="stop_float" style="position:absolute; top:1.5em; right:-2.25em;">
       <svg width="2.5em" height="2.5em" viewBox="0 0 72 72" id="emoji" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <g id="color">
           <polygon fill="#D22F27" points="33.9763,42.6906 34.0061,49.1497 34.0359,55.6089 28.1166,51.8019 22.1972,47.995 28.0868,45.3428"/>
@@ -85,34 +85,37 @@ function startFloat(e) {
 
   // option 2: float the video
   logseq.provideStyle(`
-    ${block_id_prefix}[id$='${block_uuid}'] {
+    ${block_id_prefix}[id$='${block_uuid_start}'] {
       position: sticky;
       top: ${video_position};
       z-index: 5;
+      background-color: var(--ls-primary-background-color);
     }
   `);
 }
 
 function stopFloat(e) {
-  block_uuid = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
-  let plugin = parent.document.getElementById("helium--logseq-helium-plugin");
+  let block_uuid_stop = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
+  let plugin = parent.document.getElementById("logseq-helium-plugin--helium");
   
   // reset the display of the video
   // option 1
   logseq.provideStyle(`
-    ${block_id_prefix}[id$='${block_uuid}'] > .flex.flex-row.pr-2 {
+    ${block_id_prefix}[id$='${block_uuid_stop}'] > .flex.flex-row.pr-2 {
       position: relative;
       top: 0;
       z-index: 0;
+      background-color: none;
     }
   `);
 
   // option 2
   logseq.provideStyle(`
-    ${block_id_prefix}[id$='${block_uuid}'] {
+    ${block_id_prefix}[id$='${block_uuid_stop}'] {
       position: relative;
       top: 0;
       z-index: 0;
+      background-color: none;
     }
   `);
 
