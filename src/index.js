@@ -19,9 +19,10 @@ const settings = [
 logseq.useSettingsSchema(settings);
 
 const block_id_prefix = `div[id^='ls-block']`;
+let block_uuid_start;
 
 function startFloat(e) {
-  let block_uuid_start = e.uuid;
+  block_uuid_start = e.uuid;
   const video_position = logseq.settings.VideoPosition;
   const icon_position = logseq.settings.IconPosition;
 
@@ -95,7 +96,9 @@ function startFloat(e) {
 }
 
 function stopFloat(e) {
-  let block_uuid_stop = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
+  let block_uuid_stop = (e?.uuid == undefined) ? e : e.uuid;
+  // e.dataset.heliumId was not yet used
+  // let block_uuid_stop = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
   let plugin = parent.document.getElementById("logseq-helium-plugin--helium");
   
   // reset the display of the video
@@ -120,7 +123,7 @@ function stopFloat(e) {
   `);
 
   // remove the balloon icon
-  plugin.remove();
+  if (plugin) plugin.remove();
 }
 
 const main = async () => {
@@ -152,6 +155,22 @@ const main = async () => {
   logseq.Editor.registerBlockContextMenuItem("❌ Stop float", async (e) => {
     stopFloat(e);
   });
+  // disable floating block
+  // this could be a toggle, if it knew how to find the only (or first)
+  // video on the page (hint, hint)
+  logseq.App.registerCommandPalette(
+    {
+      key: `logseq-helium-plugin-off`,
+      label: `Disable floating (video) block`,
+      keybinding: {
+        mode: 'global',
+        binding: 'mod+d',
+      },
+    },
+    async () => {
+      await stopFloat(stopFloat(block_uuid_start));
+    }
+  );
 }
 
 logseq.ready(main).catch(console.error);
