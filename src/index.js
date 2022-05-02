@@ -104,7 +104,6 @@ function stopFloat(e) {
     ${block_id_prefix}[id$='${block_uuid_stop}'] > .flex.flex-row.pr-2 {
       position: relative;
       top: 0;
-      z-index: 0;
       background-color: none;
     }
   `);
@@ -114,7 +113,6 @@ function stopFloat(e) {
     ${block_id_prefix}[id$='${block_uuid_stop}'] {
       position: relative;
       top: 0;
-      z-index: 0;
       background-color: none;
     }
   `);
