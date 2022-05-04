@@ -1,11 +1,14 @@
 ## logseq-helium-plugin
 
 ## Features
-### Float videos for better note-taking in 2 ways:
-- Block context menu (right-click on bullet)
-- Slash (/) command 
+### Float videos for better note-taking in 3 ways:
+- Block context menu (right-click on bullet) → `🎈 Start float`
+- Slash (/) command → `🎈 Start float`
+- Keyboard shortcut
+    - Usage: click on the task (as if to edit it) → activate the keyboard shortcut (can be configured in the [settings](settings))
+> If it's a YouTube video being floated, a dimensions icon will appear underneath the balloon icon that enables the video's height and width to be adjusted
 #### Demo
-![logseq_time_tracker_main_demo.gif](screenshots/logseq_time_tracker_main_demo.gif)
+![logseq_helium_main_demo.gif](screenshots/logseq_helium_main_demo.gif)
 - ❌ Without the plugin: Watch the video in the left main area and take notes in the right sidebar
 - ✅ With the plugin: Watch the video and take notes in the main area!
     - The position of the video and the balloon icon can be configured in the [settings](#settings)
