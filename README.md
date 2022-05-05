@@ -6,15 +6,15 @@
 - Slash (/) command → `🎈 Start float`
 - Keyboard shortcut
     - Usage: click on the task (as if to edit it) → activate the keyboard shortcut (can be configured in the [settings](settings))
-> If it's a YouTube video being floated, a dimensions icon will appear underneath the balloon icon that enables the video's height and width to be adjusted
+> If it's a YouTube video being floated, a dimensions icon will appear underneath the balloon icon that enables the video's height (H) and width (W) to be adjusted
 #### Demo
-![logseq_helium_main_demo.gif](screenshots/logseq_helium_main_demo.gif)
+![logseq_helium_main_demo.gif](screenshots/logseq_helium_main_demo.gif)  
 - ❌ Without the plugin: Watch the video in the left main area and take notes in the right sidebar
 - ✅ With the plugin: Watch the video and take notes in the main area!
     - The position of the video and the balloon icon can be configured in the [settings](#settings)
 
 ## Settings
-- Each time you make changes to the plugin settings, please refresh Logseq to ensure that all settings are updated
+- Each time you make changes to the plugin settings, please refresh Logseq to ensure that all settings are updated  
 ![logseq-helium-plugin settings](screenshots/logseq_helium_settings.png)
 
 
