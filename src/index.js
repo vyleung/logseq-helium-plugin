@@ -25,7 +25,7 @@ const settings = [
   {
     key: "KeyboardShortcut",
     title: "Keyboard shortcut to start/stop floating the video",
-    description: "This is the keyboard shortcut to start/stop the video from floating (default: ctrl+shift+h)",
+    description: 'This is the keyboard shortcut to start/stop the video from floating (default: ctrl+shift+h). Insert "NA" if you do NOT want to have a keyboard shortcut',
     type: "string",
     default: "ctrl+shift+h"
   }
@@ -298,20 +298,22 @@ const main = async () => {
   }
 
   logseq.onSettingsChanged(updated_settings => {
-    // register default keyboard shortcut
-    if ((keyboard_shortcut_version == 0) && (updated_settings.KeyboardShortcut != undefined)) {
-      registerKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version, updated_settings.KeyboardShortcut);
-      
-      // keyboard_shortcut_version = 0 => 1;
-      keyboard_shortcut_version++;
-    }
-    // when the keyboard shortcut is modified:
-    else {
-      // keyboard_shortcut_version = 1 => 0;
-      keyboard_shortcut_version--;
+    if (updated_settings.KeyboardShortcut != "NA") {
+      // register default keyboard shortcut
+      if ((keyboard_shortcut_version == 0) && (updated_settings.KeyboardShortcut != undefined)) {
+        registerKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version, updated_settings.KeyboardShortcut);
+        
+        // keyboard_shortcut_version = 0 => 1;
+        keyboard_shortcut_version++;
+      }
+      // when the keyboard shortcut is modified:
+      else {
+        // keyboard_shortcut_version = 1 => 0;
+        keyboard_shortcut_version--;
 
-      // unregister previous shortcut
-      unregisterKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version);
+        // unregister previous shortcut
+        unregisterKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version);
+      }
     }
   });
 

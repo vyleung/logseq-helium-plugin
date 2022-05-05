@@ -15,8 +15,8 @@
 
 ## Settings
 - Each time you make changes to the plugin settings, please refresh Logseq to ensure that all settings are updated  
-![logseq-helium-plugin settings](screenshots/logseq_helium_settings.png)
-
+![logseq-helium-plugin settings](screenshots/logseq_helium_settings.png)  
+> 🚨 **NOTE:** If you would like to entirely change the keyboard shortcut or simply change the modifier of the shortcut (e.g. from `ctrl+shift+h` to `cmd+alt+g`), select the existing shortcut and type the new shortcut over it. Completely deleting the existing shortcut and then typing a new shortcut will display an error
 
 ## Installation
 ### Preparation
