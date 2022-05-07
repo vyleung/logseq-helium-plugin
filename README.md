@@ -1,5 +1,5 @@
 ## logseq-helium-plugin
-> Check out my other [Logseq plugins](https://github.com/vyleung?tab=repositories&q=logseq&type=source)
+> If you find this plugin – or any of my other [Logseq plugins](https://github.com/vyleung?tab=repositories&q=logseq&type=source) – useful and would like to support me, you can [buy me a coffee](https://www.buymeacoffee.com/vyleung) 🙂
 
 ## Features
 ### Float videos for better note-taking in 3 ways:
@@ -39,7 +39,3 @@ MIT
 ## Credits
 - Plugin Marketplace Icon: Designed by [OpenMoji](https://openmoji.org/) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)
 - Plugin name and concept inspired by the [Helium Mac App](https://github.com/JadenGeller/Helium)
-
-## Support
-If you find this plugin useful and would like to support me, you can buy me a coffee 🙂  
-<a href="https://www.buymeacoffee.com/vyleung" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;"></a>
