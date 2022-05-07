@@ -1,6 +1,6 @@
 {
   "name": "logseq-helium-plugin",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Float videos for an improved note-taking experience",
   "main": "dist/index.html",
   "targets": {
@@ -18,7 +18,7 @@
   },
   "logseq": {
     "id": "logseq-helium-plugin",
-    "title": "logseq-helium-plugin",
+    "title": "Helium",
     "icon": "./icon.png"
   },
   "devDependencies": {
