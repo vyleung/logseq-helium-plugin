@@ -4,9 +4,9 @@ const settings = [
   {
     key: "VideoPosition",
     title: "Edit the top position of the floated video",
-    description: "Default: -3em. To move the video lower, insert a more positive number (e.g. -2em). To move the video higher, insert a more negative number (e.g. -4em)",
+    description: "Default: -2em. To move the video lower, insert a more positive number (e.g. -1em). To move the video higher, insert a more negative number (e.g. -3em)",
     type: "string",
-    default: "-3em"
+    default: "-2em"
   },
   {
     key: "IconTopPosition",
@@ -35,6 +35,15 @@ logseq.useSettingsSchema(settings);
 const block_id_prefix = `div[id^="ls-block"]`;
 let float = true;
 let block_uuid_start;
+let video_id;
+let youtube_iframe_increase_h;
+let youtube_iframe_increase_height;
+let youtube_iframe_decrease_h;
+let youtube_iframe_decrease_height;
+let youtube_iframe_increase_w;
+let youtube_iframe_increase_width;
+let youtube_iframe_decrease_w;
+let youtube_iframe_decrease_width;
 
 function startFloat(e) {
   block_uuid_start = e.uuid;
@@ -90,7 +99,7 @@ function startFloat(e) {
               </svg>
             </a>
           </li>
-          <div id="controls-container" style="display:none; margin-left:0.1em;">
+          <div id="controls-container" style="display:none; margin-left:0.05em;">
             <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
               <li class="helium-controls icon" title="Decrease video height">
                 <a class="button" data-helium-decrease-height-id="${youtube_id}" data-on-click="decrease_video_height">
@@ -100,7 +109,7 @@ function startFloat(e) {
                   </svg>
                 </a>
               </li>
-              <li class="helium-controls letter" style="margin: 0 0.325em;">H</li>
+              <li class="helium-controls letter" style="margin: 0 0.375em;">H</li>
               <li class="helium-controls icon" title="Increase video height">
                 <a class="button" data-helium-increase-height-id="${youtube_id}" data-on-click="increase_video_height">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -123,6 +132,33 @@ function startFloat(e) {
               <li class="helium-controls letter" style="margin: 0 0.25em;">W</li>
               <li class="helium-controls icon" title="Increase video width">
                 <a class="button" data-helium-increase-width-id="${youtube_id}" data-on-click="increase_video_width">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </a>
+              </li>
+            </ul>
+            <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
+              <li class="helium-controls icon" title="Decrease video height and width">
+                <a class="button" data-helium-decrease-height-width-id="${youtube_id}" data-on-click="decrease_video_height_width">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </a>
+              </li>
+              <li class="helium-controls letter" style="margin: 0.15em;">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-aspect-ratio" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M7 12v-3h3" />
+                  <path d="M17 12v3h-3" />
+                </svg>
+              </li>
+              <li class="helium-controls icon" title="Increase video height and width">
+                <a class="button" data-helium-increase-height-width-id="${youtube_id}" data-on-click="increase_video_height_width">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -251,6 +287,46 @@ function stopFloat(e) {
 const main = async () => {
   console.log("logseq-helium-plugin loaded"); 
 
+  // clicking on the "+" button next to the "H" increases the youtube video height by 32px
+  function increaseVideoHeight(e) {
+    video_id = (e.dataset.heliumIncreaseHeightId) ? `${e.dataset.heliumIncreaseHeightId}` : `${e.dataset.heliumIncreaseHeightWidthId}`;
+
+    youtube_iframe_increase_h = parent.document.getElementById(`youtube-player-${video_id}`);
+    youtube_iframe_increase_height = youtube_iframe_increase_h.getBoundingClientRect().height;
+    youtube_iframe_increase_height += 32;
+    youtube_iframe_increase_h.style.height = `${youtube_iframe_increase_height}px`;
+  }
+
+  // clicking on the "-" button next to the "H" decreases the youtube video height by 32px
+  function decreaseVideoHeight(e) {
+    video_id = (e.dataset.heliumDecreaseHeightId) ? `${e.dataset.heliumDecreaseHeightId}` : `${e.dataset.heliumDecreaseHeightWidthId}`;
+
+    youtube_iframe_decrease_h = parent.document.getElementById(`youtube-player-${video_id}`);
+    youtube_iframe_decrease_height = youtube_iframe_decrease_h.getBoundingClientRect().height;
+    youtube_iframe_decrease_height -= 32;
+    youtube_iframe_decrease_h.style.height = `${youtube_iframe_decrease_height}px`;
+  }
+
+  // clicking on the "+" button next to the "W" increases the youtube video width by 32px
+  function increaseVideoWidth(e) {
+    video_id = (e.dataset.heliumIncreaseWidthId) ? `${e.dataset.heliumIncreaseWidthId}` : `${e.dataset.heliumIncreaseHeightWidthId}`;
+
+    youtube_iframe_increase_w = parent.document.getElementById(`youtube-player-${video_id}`);
+    youtube_iframe_increase_width = youtube_iframe_increase_w.getBoundingClientRect().width;
+    youtube_iframe_increase_width += 32;
+    youtube_iframe_increase_w.style.width = `${youtube_iframe_increase_width}px`;
+  }
+
+  // clicking on the "-" button next to the "W" decreases the youtube video width by 32px
+  function decreaseVideoWidth(e) {
+    video_id = (e.dataset.heliumDecreaseWidthId) ? `${e.dataset.heliumDecreaseWidthId}` : `${e.dataset.heliumDecreaseHeightWidthId}`;
+
+    youtube_iframe_decrease_w = parent.document.getElementById(`youtube-player-${video_id}`);
+    youtube_iframe_decrease_width = youtube_iframe_decrease_w.getBoundingClientRect().width;
+    youtube_iframe_decrease_width -= 32;
+    youtube_iframe_decrease_w.style.width = `${youtube_iframe_decrease_width}px`;
+  }
+
   logseq.provideModel({
     // clicking on the balloon icon resets the block back to normal
     stop_float(e) {
@@ -260,92 +336,64 @@ const main = async () => {
       let controls_container = parent.document.getElementById("controls-container");
       controls_container.style.display = (controls_container.style.display === "none") ? "block" : "none";
     },
-    // clicking on the "+" button increases the youtube video height by 32px
     increase_video_height(e) {
-      let youtube_iframe_increase_h = parent.document.getElementById(`youtube-player-${e.dataset.heliumIncreaseHeightId}`);
-      let youtube_iframe_increase_height = youtube_iframe_increase_h.getBoundingClientRect().height;
-      youtube_iframe_increase_height += 32;
-      youtube_iframe_increase_h.style.height = `${youtube_iframe_increase_height}px`;
+      increaseVideoHeight(e);
     },
-    // clicking on the "-" button decreases the youtube video height by 32px
     decrease_video_height(e) {
-      let youtube_iframe_decrease_h = parent.document.getElementById(`youtube-player-${e.dataset.heliumDecreaseHeightId}`);
-      let youtube_iframe_decrease_height = youtube_iframe_decrease_h.getBoundingClientRect().height;
-      youtube_iframe_decrease_height -= 32;
-      youtube_iframe_decrease_h.style.height = `${youtube_iframe_decrease_height}px`;
+      decreaseVideoHeight(e);
     },
-    // clicking on the "+" button increases the youtube video width by 32px
     increase_video_width(e) {
-      let youtube_iframe_increase_w = parent.document.getElementById(`youtube-player-${e.dataset.heliumIncreaseWidthId}`);
-      let youtube_iframe_increase_width = youtube_iframe_increase_w.getBoundingClientRect().width;
-      youtube_iframe_increase_width += 32;
-      youtube_iframe_increase_w.style.width = `${youtube_iframe_increase_width}px`;
+      increaseVideoWidth(e);
     },
-    // clicking on the "-" button decreases the youtube video width by 32px
     decrease_video_width(e) {
-      let youtube_iframe_decrease_w = parent.document.getElementById(`youtube-player-${e.dataset.heliumDecreaseWidthId}`);
-      let youtube_iframe_decrease_width = youtube_iframe_decrease_w.getBoundingClientRect().width;
-      youtube_iframe_decrease_width -= 32;
-      youtube_iframe_decrease_w.style.width = `${youtube_iframe_decrease_width}px`;
+      decreaseVideoWidth(e);
+    },
+    // clicking on the "-" button next to the "aspect-ratio" icon increases the youtube video height by 32px and width by 32px
+    increase_video_height_width(e) {
+      increaseVideoHeight(e);
+      increaseVideoWidth(e);
+    },
+    // clicking on the "-" button next to the "aspect-ratio" icon decreases the youtube video height by 32px and width by 32px
+    decrease_video_height_width(e) {
+      decreaseVideoHeight(e);
+      decreaseVideoWidth(e);
     }
   });
 
   // register keyboard shortcut to start/stop floating videos
   let keyboard_shortcut_version = 0;
-  function registerKeyboardShortcut(type, version, keyboard_shortcut) {
-    logseq.App.registerCommandPalette({
-      key: `helium-${type}-${version}`,
-      label: "Start/stop floating video",
-      keybinding: {
-        binding: keyboard_shortcut,
-        mode: "global",
-      }
-    }, async () => {
-      if (float) {
-        logseq.Editor.checkEditing().then(block_uuid => {
-          if (block_uuid) {
-            logseq.Editor.getBlock(block_uuid).then(block => {
-              startFloat(block);
-            });
-            logseq.Editor.exitEditingMode();
-          }
-          else {
-            logseq.App.showMsg("No video was selected to float", "warning");
-          }
-        });
-      }
-      else {
-        logseq.Editor.getBlock(block_uuid_start).then(block => {
-          stopFloat(block);
-        });
-      }
-    });
+  function registerKeyboardShortcut() {
+    if (logseq.settings.KeyboardShortcut != "NA") {
+      logseq.App.registerCommandPalette({
+        key: `helium-keyboard-shortcut`,
+        label: "Start/stop floating video",
+        keybinding: {
+          binding: logseq.settings.KeyboardShortcut,
+          mode: "global",
+        }
+      }, async () => {
+        if (float) {
+          logseq.Editor.checkEditing().then(block_uuid => {
+            if (block_uuid) {
+              logseq.Editor.getBlock(block_uuid).then(block => {
+                startFloat(block);
+              });
+              logseq.Editor.exitEditingMode();
+            }
+            else {
+              logseq.UI.showMsg("No video was selected to float", "warning");
+            }
+          });
+        }
+        else {
+          logseq.Editor.getBlock(block_uuid_start).then(block => {
+            stopFloat(block);
+          });
+        }
+      });
+    } 
   }
-
-  // unregister keyboard shortcut to start/stop floating videos
-  function unregisterKeyboardShortcut(type, version) {
-    logseq.App.unregister_plugin_simple_command(`${logseq.baseInfo.id}/helium-${type}-${version}`);
-  }
-
-  logseq.onSettingsChanged(updated_settings => {
-    if (updated_settings.KeyboardShortcut != "NA") {
-      // register default keyboard shortcut
-      if ((keyboard_shortcut_version == 0) && (updated_settings.KeyboardShortcut != undefined)) {
-        registerKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version, updated_settings.KeyboardShortcut);
-        
-        // keyboard_shortcut_version = 0 => 1;
-        keyboard_shortcut_version++;
-      }
-      // when the keyboard shortcut is modified:
-      else {
-        // keyboard_shortcut_version = 1 => 0;
-        keyboard_shortcut_version--;
-
-        // unregister previous shortcut
-        unregisterKeyboardShortcut("KeyboardShortcut", keyboard_shortcut_version);
-      }
-    }
-  });
+  registerKeyboardShortcut();
 
   // slash command - float the video
   logseq.Editor.registerSlashCommand("🎈 Start float", async (e) => {
