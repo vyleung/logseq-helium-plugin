@@ -123,7 +123,7 @@ function startFloat(e) {
         local_video_embed.id = `helium-localVideo-${block_uuid_start}`;
       }
       video_id = local_video_embed.id;
-      local_video_embed.addEventListener("click", playPauseControls);
+      local_video_embed.addEventListener("click", playPauseControls_Listener);
     }
     // iframes using the legacy {{youtube URL}} or {{vimeo URL}} macros
     else if ((!video_embed) && (video_embed_legacy)) {
@@ -328,7 +328,7 @@ function startFloat(e) {
 
 function stopFloat(e) {
   if (local_video_embed) {
-    local_video_embed.removeEventListener("click", playPauseControls);
+    local_video_embed.removeEventListener("click", playPauseControls_Listener);
   }
 
   let block_uuid_stop = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
@@ -393,6 +393,11 @@ function playPauseControls() {
     showPauseButton();
     play = true;
   }
+}
+
+function playPauseControls_Listener() {
+  current_video = parent.document.getElementById(`${video_id}`);
+  (current_video.paused) ? showPauseButton() : showPlayButton();
 }
 
 function showPlayButton() {
