@@ -77,7 +77,6 @@ let video_embed_iframe;
 let video_embed_legacy;
 let video_embed_iframe_legacy;
 let local_video_embed;
-let local_video;
 let youtube_embed;
 
 let video_iframe_increase_h;
@@ -106,7 +105,7 @@ function startFloat(e) {
     let block_content = block.content;
     video_embed_legacy = (block_content.match(/({{youtube [\s\S]*?}})/gm)) || (block_content.match(/({{vimeo [\s\S]*?}})/gm));
     video_embed = block_content.match(/({{video [\s\S]*?}})/gm);
-    local_video_embed = block_content.match(/(![[\s\S]*?\))/gm);
+    local_video_embed = parent_block.querySelector("video");
 
     // iframes
     if (video_embed) {
@@ -120,13 +119,11 @@ function startFloat(e) {
     }
     // local videos
     else if ((!video_embed) && (local_video_embed)) {
-      local_video = parent_block.querySelector("video");
-      
-      if ((local_video) && (local_video.id == "")) {
-        local_video.id = `helium-localVideo-${block_uuid_start}`;
+      if ((local_video_embed) && (local_video_embed.id == "")) {
+        local_video_embed.id = `helium-localVideo-${block_uuid_start}`;
       }
-      video_id = local_video.id;
-      local_video.addEventListener("click", playPauseControls);
+      video_id = local_video_embed.id;
+      local_video_embed.addEventListener("click", playPauseControls);
     }
     // iframes using the legacy {{youtube URL}} or {{vimeo URL}} macros
     else if ((!video_embed) && (video_embed_legacy)) {
@@ -330,8 +327,8 @@ function startFloat(e) {
 }
 
 function stopFloat(e) {
-  if (local_video) {
-    local_video.removeEventListener("click", playPauseControls);
+  if (local_video_embed) {
+    local_video_embed.removeEventListener("click", playPauseControls);
   }
 
   let block_uuid_stop = (e.uuid == undefined) ? e.dataset.heliumId : e.uuid;
