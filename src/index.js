@@ -265,10 +265,6 @@ function startFloat(e) {
             </li>
             <li class="helium-controls" id="helium-controls-play-pause" style="margin-left: -0.05em; margin-top: 0.05em;">
               <a class="button" id="helium-play-pause-button" data-on-click="play_pause">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-player-play" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="var(--ls-primary-text-color)" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M7 4v16l13 -8z" />
-                </svg>
               </a>
             </li>
             <li class="helium-controls icon">
@@ -318,9 +314,39 @@ function startFloat(e) {
             display: flex;
           }
         `)
+
+        // show appropriate play/pause icon based on whether the video is paused or not
+        setDriftlessTimeout(() => {
+          // youtube videos
+          if (video_id.includes("youtube-player")) {
+            current_video = parent.window.YT.get(video_id);
+            
+            // if the video is paused or cued
+            if ((current_video.getPlayerState() == 2)|| (current_video.getPlayerState() == 5)) {
+              showPlayButton();
+            }
+            // if the video is playing
+            else if (current_video.getPlayerState() == 1) {
+              showPauseButton();
+              play = true;
+            }
+          }
+          // local videos
+          else if (video_id.includes("helium-localVideo")) {
+            current_video = parent.document.getElementById(`${video_id}`);
+
+            if (current_video.paused) {
+              showPlayButton();
+            }
+            else {
+              showPauseButton();
+              play = true;
+            }
+          }
+        }, 10);
       } 
     }
-  }); 
+  });
 
   float = false;
   play = false;
