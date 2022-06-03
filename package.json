@@ -1,6 +1,6 @@
 {
   "name": "logseq-helium-plugin",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "Float videos for an improved note-taking experience",
   "main": "dist/index.html",
   "targets": {
@@ -14,7 +14,8 @@
   "author": "vyleung",
   "license": "MIT",
   "dependencies": {
-    "@logseq/libs": "^0.0.6"
+    "@logseq/libs": "^0.0.6",
+    "driftless": "^2.0.3"
   },
   "logseq": {
     "id": "logseq-helium-plugin",

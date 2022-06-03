@@ -2,17 +2,23 @@
 > If you find this plugin – or any of my other [Logseq plugins](https://github.com/vyleung?tab=repositories&q=logseq&type=source) – useful and would like to support me, you can [buy me a coffee](https://www.buymeacoffee.com/vyleung) 🙂
 
 ## Features
-### Float videos for better note-taking in 3 ways:
+### Float videos for an improved note-taking experience in 3 ways:
 - Block context menu (right-click on bullet) → `🎈 Start float`
 - Slash (/) command → `🎈 Start float`
 - Keyboard shortcut
     - Usage: click on the task (as if to edit it) → activate the keyboard shortcut (can be configured in the [settings](settings))
-> If it's a YouTube video being floated, a dimensions icon will appear underneath the balloon icon that enables the video's height (H) and width (W) to be adjusted
+
+> When a video is being floated, clicking on the dimensions icon underneath the balloon icon will enable the video's height (H) and width (W) to be <u>individually</u> or <u>simultaneously</u> adjusted. 
+>
+> If the video is a YouTube video or a local video, you can use keyboard shortcuts to play/pause and skip forward/backward (keyboard shortcuts and skip duration can be configured in the [settings](settings))
+
 #### Demo
-![logseq_helium_main_demo.gif](screenshots/logseq_helium_main_demo.gif)  
-- ❌ Without the plugin: Watch the video in the left main area and take notes in the right sidebar
-- ✅ With the plugin: Watch the video and take notes in the main area!
-    - The position of the video and the balloon icon can be configured in the [settings](#settings)
+- v.1.0.x: Using the block context menu to float the video  
+![logseq-helium-plugin main demo (block context menu)](screenshots/logseq_helium_main_demo_blockContextMenu.gif)  
+- v.1.1.x: Using the keyboard shortcut to float the video  
+![logseq-helium-plugin main demo (keyboard shortcut)](screenshots/logseq_helium_main_demo_keyboardShortcut.gif)  
+- v.2.0.x: Using keyboard shortcuts to play/pause the video and skip forward/backward in the video  
+![logseq-helium-plugin v.2.0.0 demo](screenshots/logseq_helium_v.2.0.0.gif)
 
 ## Settings
 - Each time you make changes to the plugin settings, please refresh Logseq to ensure that all settings are updated  
