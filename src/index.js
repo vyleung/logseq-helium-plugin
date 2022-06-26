@@ -57,6 +57,13 @@ const settings = [
     description: "Skip forward (fast forward) or backwards (rewind) a certain number of seconds in videos (default: 10)",
     type: "number",
     default: 10
+  },
+  {
+    key: "PlaybackSpeedIncrement",
+    title: "Increase/decrease playback speed increment for videos",
+    description: "This is the custom playback speed increment for videos (default: 0.25)",
+    type: "number",
+    default: 0.25
   }
 ]
 logseq.useSettingsSchema(settings);
@@ -79,19 +86,19 @@ let video_embed_iframe_legacy;
 let local_video_embed;
 let youtube_embed;
 
-let video_iframe_increase_h;
+let current_video;
+let video_dimensions;
+let video_iframe;
 let video_iframe_increase_height;
-let video_iframe_decrease_h;
 let video_iframe_decrease_height;
-let video_iframe_increase_w;
 let video_iframe_increase_width;
-let video_iframe_decrease_w;
 let video_iframe_decrease_width;
 
-let current_video;
-let current_video_id;
 let skip;
 let skip_duration;
+let playback;
+let playback_speed;
+let playback_speed_increment;
 
 function startFloat(e) {
   const video_position = logseq.settings.VideoPosition;
@@ -187,7 +194,7 @@ function startFloat(e) {
           <div id="controls-container" style="display:none; margin-left:0.05em;">
             <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
               <li class="helium-controls icon" title="Decrease video height">
-                <a class="button" data-helium-decrease-height-id="${video_id}" data-on-click="decrease_video_height">
+                <a class="button" data-on-click="decrease_video_height">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -196,7 +203,7 @@ function startFloat(e) {
               </li>
               <li class="helium-controls letter" style="margin: 0 0.375em;">H</li>
               <li class="helium-controls icon" title="Increase video height">
-                <a class="button" data-helium-increase-height-id="${video_id}" data-on-click="increase_video_height">
+                <a class="button" data-on-click="increase_video_height">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -207,7 +214,7 @@ function startFloat(e) {
             </ul>
             <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
               <li class="helium-controls icon" title="Decrease video width">
-                <a class="button" data-helium-decrease-width-id="${video_id}" data-on-click="decrease_video_width">
+                <a class="button" data-on-click="decrease_video_width">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -216,7 +223,7 @@ function startFloat(e) {
               </li>
               <li class="helium-controls letter" style="margin: 0 0.25em;">W</li>
               <li class="helium-controls icon" title="Increase video width">
-                <a class="button" data-helium-increase-width-id="${video_id}" data-on-click="increase_video_width">
+                <a class="button" data-on-click="increase_video_width">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -227,7 +234,7 @@ function startFloat(e) {
             </ul>
             <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
               <li class="helium-controls icon" title="Decrease video height and width">
-                <a class="button" data-helium-decrease-height-width-id="${video_id}" data-on-click="decrease_video_height_width">
+                <a class="button" data-on-click="decrease_video_height_width">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -243,7 +250,40 @@ function startFloat(e) {
                 </svg>
               </li>
               <li class="helium-controls icon" title="Increase video height and width">
-                <a class="button" data-helium-increase-height-width-id="${video_id}" data-on-click="increase_video_height_width">
+                <a class="button" data-on-click="increase_video_height_width">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <li class="helium-controls" style="margin-left:1.65em;">
+            <a class="button" data-on-click="toggle_playback_speed">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-gauge" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="1" />
+                <line x1="13.41" y1="10.59" x2="16" y2="8" />
+                <path d="M7 12a5 5 0 0 1 5 -5" />
+              </svg>
+            </a>
+          </li>
+          <div id="playback-speed-container" style="display:none; margin-left: -0.65em;">
+            <ul style="display:flex; list-style-type:none; margin: 0 0 0 0.2em;">
+              <li class="helium-controls icon" title="Decrease playback speed">
+                <a class="button" data-on-click="decrease_playback_speed">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </a>
+              </li>
+              <li class="helium-controls number" id="playback-speed" style="margin: 0.1em 0.375em; width:42px; font-size:0.9em; font-weight:500;">1.00x</li>
+              <li class="helium-controls icon" title="Increase playback speed">
+                <a class="button" data-on-click="increase_playback_speed">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2.5" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -255,7 +295,7 @@ function startFloat(e) {
           </div>
           <ul id="helium-media-controls" style="list-style-type:none; margin: 0;">
             <li class="helium-controls icon" style="margin-left:0.05em;">
-              <a class="button">
+              <a class="button" data-on-click="skip_backward">
                 <svg id="skip-backward" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-player-track-prev" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M21 5v14l-8 -7z" />
@@ -268,8 +308,8 @@ function startFloat(e) {
               </a>
             </li>
             <li class="helium-controls icon">
-              <a class="button">
-                <svg id="skip-forward"  style="margin-left: 0.1em;" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-player-track-next" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <a class="button" data-on-click="skip_forward">
+                <svg id="skip-forward" style="margin-left: 0.1em;" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-player-track-next" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--ls-primary-text-color)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M3 5v14l8 -7z" />
                   <path d="M14 5v14l8 -7z" />
@@ -293,7 +333,7 @@ function startFloat(e) {
           width: fit-content;
           margin-top: 0;
         }
-        .helium-controls.letter {
+        .helium-controls.letter, .helium-controls.number {
           color: var(--ls-primary-text-color);
           opacity: 0.6;
           cursor: default;
@@ -383,6 +423,76 @@ function stopFloat(e) {
   }
 
   float = true;
+}
+
+function videoDimensionsControls() {
+  video_iframe = parent.document.getElementById(video_id);
+
+  function increaseVideoHeight() {
+    video_iframe_increase_height = video_iframe.getBoundingClientRect().height;
+    video_iframe_increase_height += 32;
+    video_iframe.style.height = `${video_iframe_increase_height}px`;
+  }
+
+  function decreaseVideoHeight() {
+    video_iframe_decrease_height = video_iframe.getBoundingClientRect().height;
+    video_iframe_decrease_height -= 32;
+    video_iframe.style.height = `${video_iframe_decrease_height}px`;
+  }
+
+  function increaseVideoWidth() {
+    video_iframe_increase_width = video_iframe.getBoundingClientRect().width;
+    video_iframe_increase_width += 32;
+    video_iframe.style.width = `${video_iframe_increase_width}px`;
+
+    // adjust width of parent block
+    parent_block_width = parent_block.getBoundingClientRect().width;
+    parent_block_width += 32;
+    parent_block.style.width = `${parent_block_width}px`;
+
+    // don't adjust the width of the parent block's children
+    parent_block_children = parent.document.querySelector(`${block_id_prefix}[id$="${block_uuid_start}"] > .block-children-container.flex`);
+    if (parent_block_children) {
+      parent_block_children.style.width = `${parent_block_original_width}px`;
+    }
+  }
+
+  function decreaseVideoWidth() {
+    video_iframe_decrease_width = video_iframe.getBoundingClientRect().width;
+    video_iframe_decrease_width -= 32;
+    video_iframe.style.width = `${video_iframe_decrease_width}px`;
+
+    // adjust width of parent block (can't be lower than original width)
+    parent_block_width = parent_block.getBoundingClientRect().width;
+    if (parent_block_width > parent_block_original_width) {
+      parent_block_width -= 32;
+      parent_block.style.width = `${parent_block_width}px`;
+    }
+    else {
+      parent_block.style.width = `${parent_block_original_width}px`;
+    }
+  }
+
+  if (video_dimensions == "increase height") {
+    increaseVideoHeight();
+  }
+  else if (video_dimensions == "decrease height") {
+    decreaseVideoHeight();
+  }
+  else if (video_dimensions == "increase width") {
+    increaseVideoWidth();
+  }
+  else if (video_dimensions == "decrease width") {
+    decreaseVideoWidth();
+  }
+  else if (video_dimensions == "increase height and width") {
+    increaseVideoHeight();
+    increaseVideoWidth();
+  }
+  else if (video_dimensions == "decrease height and width") {
+    decreaseVideoHeight();
+    decreaseVideoWidth();
+  }
 }
 
 function playPauseControls() {
@@ -496,67 +606,54 @@ function skipControls() {
   }
 }
 
+function playbackSpeedControls() {
+  // update the playback speed interval when it's changed in the settings
+  playback_speed_increment = parseFloat(logseq.settings.PlaybackSpeedIncrement);
+  logseq.onSettingsChanged(updated_settings => {
+    playback_speed_increment = parseFloat(updated_settings.SkipDuration);
+  });
+
+  if (playback == "increase") {
+    // youtube videos
+    if (video_id.includes("youtube-player")) {
+      youtube_embed = parent.window.YT.get(video_id);
+      playback_speed = youtube_embed.getPlaybackRate() + playback_speed_increment;
+
+      setDriftlessTimeout(() => {
+        youtube_embed.setPlaybackRate(playback_speed);
+      }, 50);
+    }
+    // local videos
+    else if (video_id.includes("helium-localVideo")) {
+      parent.document.getElementById(`${video_id}`).playbackRate += playback_speed_increment;
+      playback_speed = parent.document.getElementById(`${video_id}`).playbackRate;
+    }
+  }
+  else if (playback == "decrease") {
+    // youtube videos
+    if (video_id.includes("youtube-player")) {
+      if (youtube_embed.getPlaybackRate() > 0) {
+        youtube_embed = parent.window.YT.get(video_id);
+        playback_speed = youtube_embed.getPlaybackRate() - playback_speed_increment;
+        youtube_embed.setPlaybackRate(playback_speed);
+      }
+    }
+    // local videos
+    else if (video_id.includes("helium-localVideo")) {
+      if (parent.document.getElementById(`${video_id}`).playbackRate > 0) {
+        parent.document.getElementById(`${video_id}`).playbackRate -= playback_speed_increment;
+        playback_speed = parent.document.getElementById(`${video_id}`).playbackRate;
+      }
+    }
+  }
+
+  if (playback_speed > 0) {
+    parent.document.getElementById("playback-speed").textContent = `${playback_speed.toFixed(2)}x`;
+  }
+}
+
 const main = async () => {
   console.log("logseq-helium-plugin loaded"); 
-
-  // clicking on the "+" button next to the "H" increases the video height by 32px
-  function increaseVideoHeight(e) {
-    current_video_id = (e.dataset.heliumIncreaseHeightId) ? `${e.dataset.heliumIncreaseHeightId}` : `${e.dataset.heliumIncreaseHeightWidthId}`;
-
-    video_iframe_increase_h = parent.document.getElementById(current_video_id);
-    video_iframe_increase_height = video_iframe_increase_h.getBoundingClientRect().height;
-    video_iframe_increase_height += 32;
-    video_iframe_increase_h.style.height = `${video_iframe_increase_height}px`;
-  }
-
-  // clicking on the "-" button next to the "H" decreases the video height by 32px
-  function decreaseVideoHeight(e) {
-    current_video_id = (e.dataset.heliumDecreaseHeightId) ? `${e.dataset.heliumDecreaseHeightId}` : `${e.dataset.heliumDecreaseHeightWidthId}`;
-
-    video_iframe_decrease_h = parent.document.getElementById(current_video_id);
-    video_iframe_decrease_height = video_iframe_decrease_h.getBoundingClientRect().height;
-    video_iframe_decrease_height -= 32;
-    video_iframe_decrease_h.style.height = `${video_iframe_decrease_height}px`;
-  }
-
-  // clicking on the "+" button next to the "W" increases the video width and parent block width by 32px
-  function increaseVideoWidth(e) {
-    current_video_id = (e.dataset.heliumIncreaseWidthId) ? `${e.dataset.heliumIncreaseWidthId}` : `${e.dataset.heliumIncreaseHeightWidthId}`;
-
-    video_iframe_increase_w = parent.document.getElementById(current_video_id);
-    video_iframe_increase_width = video_iframe_increase_w.getBoundingClientRect().width;
-    video_iframe_increase_width += 32;
-    video_iframe_increase_w.style.width = `${video_iframe_increase_width}px`;
-
-    // adjust width of parent block
-    parent_block_width = parent_block.getBoundingClientRect().width;
-    parent_block_width += 32;
-    parent_block.style.width = `${parent_block_width}px`;
-
-    // don't adjust the width of the parent block's children
-    parent_block_children = parent.document.querySelector(`${block_id_prefix}[id$="${block_uuid_start}"] > .block-children-container.flex`);
-    parent_block_children.style.width = `${parent_block_original_width}px`;
-  }
-
-  // clicking on the "-" button next to the "W" decreases the video width by 32px
-  function decreaseVideoWidth(e) {
-    current_video_id = (e.dataset.heliumDecreaseWidthId) ? `${e.dataset.heliumDecreaseWidthId}` : `${e.dataset.heliumDecreaseHeightWidthId}`;
-
-    video_iframe_decrease_w = parent.document.getElementById(current_video_id);
-    video_iframe_decrease_width = video_iframe_decrease_w.getBoundingClientRect().width;
-    video_iframe_decrease_width -= 32;
-    video_iframe_decrease_w.style.width = `${video_iframe_decrease_width}px`;
-
-    // adjust width of parent block (can't be lower than original width)
-    parent_block_width = parent_block.getBoundingClientRect().width;
-    if (parent_block_width > parent_block_original_width) {
-      parent_block_width -= 32;
-      parent_block.style.width = `${parent_block_width}px`;
-    }
-    else {
-      parent_block.style.width = `${parent_block_original_width}px`;
-    }
-  }
 
   logseq.provideModel({
     // clicking on the balloon icon resets the block back to normal
@@ -568,30 +665,58 @@ const main = async () => {
       const controls_container = parent.document.getElementById("controls-container");
       controls_container.style.display = (controls_container.style.display === "none") ? "block" : "none";
     },
-    increase_video_height(e) {
-      increaseVideoHeight(e);
+    // clicking on the "+" button next to the "H" increases the video height by 32px
+    increase_video_height() {
+      video_dimensions = "increase height";
+      videoDimensionsControls();
     },
-    decrease_video_height(e) {
-      decreaseVideoHeight(e);
+    // clicking on the "-" button next to the "H" decreases the video height by 32px
+    decrease_video_height() {
+      video_dimensions = "decrease height";
+      videoDimensionsControls();
     },
-    increase_video_width(e) {
-      increaseVideoWidth(e);
+    // clicking on the "+" button next to the "W" increases the video width by 32px
+    increase_video_width() {
+      video_dimensions = "increase width";
+      videoDimensionsControls();
     },
-    decrease_video_width(e) {
-      decreaseVideoWidth(e);
+    // clicking on the "-" button next to the "W" decreases the video width by 32px
+    decrease_video_width() {
+      video_dimensions = "decrease width";
+      videoDimensionsControls();
     },
-    // clicking on the "-" button next to the "aspect-ratio" icon increases the youtube video height by 32px and width by 32px
-    increase_video_height_width(e) {
-      increaseVideoHeight(e);
-      increaseVideoWidth(e);
+    // clicking on the "+" button next to the "aspect-ratio" icon increases the video height by 32px and width by 32px
+    increase_video_height_width() {
+      video_dimensions = "increase height and width";
+      videoDimensionsControls();
     },
     // clicking on the "-" button next to the "aspect-ratio" icon decreases the youtube video height by 32px and width by 32px
-    decrease_video_height_width(e) {
-      decreaseVideoHeight(e);
-      decreaseVideoWidth(e);
+    decrease_video_height_width() {
+      video_dimensions = "decrease height and width";
+      videoDimensionsControls();
+    },
+    toggle_playback_speed() {
+      const playback_speed_container = parent.document.getElementById("playback-speed-container");
+      playback_speed_container.style.display = (playback_speed_container.style.display === "none") ? "block" : "none";
+    },
+    increase_playback_speed(e) {
+      playback = "increase";
+      playbackSpeedControls(e);
+    },
+    decrease_playback_speed() {
+      playback = "decrease";
+      playbackSpeedControls();
     },
     play_pause() {
       playPauseControls();
+    },
+    skip_forward() {
+      skip = "forward";
+      skipControls();
+    },
+    skip_backward() {
+      skip = "backward";
+      skipControls();
     }
   });
 
