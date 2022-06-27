@@ -303,7 +303,7 @@ function startFloat(e) {
                 </svg>
               </a>
             </li>
-            <li class="helium-controls" id="helium-controls-play-pause" style="margin-left: -0.05em; margin-top: 0.05em;">
+            <li class="helium-controls" id="helium-controls-play-pause" style="margin-left: -0.05em;">
               <a class="button" id="helium-play-pause-button" data-on-click="play_pause">
               </a>
             </li>
@@ -337,6 +337,11 @@ function startFloat(e) {
           color: var(--ls-primary-text-color);
           opacity: 0.6;
           cursor: default;
+        }
+        a.button {
+          display: flex;
+          align-items: center;
+          padding: 0.25em;
         }
       `);
 
