@@ -3,6 +3,11 @@ import { setDriftlessTimeout } from "driftless";
 
 const settings = [
   {
+    key: "Note",
+    title: "Note: Insert NA where you do NOT want to assign a keyboard shortcut",
+    type: "heading"
+  },
+  {
     key: "VideoPosition",
     title: "Edit the top position of the floated video",
     description: "Default: -2em. To move the video lower, insert a more positive number (e.g. -1em). To move the video higher, insert a more negative number (e.g. -3em)",
@@ -26,7 +31,7 @@ const settings = [
   {
     key: "KeyboardShortcut_Helium",
     title: "Keyboard shortcut to start/stop floating the video",
-    description: 'This is the keyboard shortcut to start/stop the video from floating (default: ctrl+shift+h). Insert "NA" if you do NOT want to have a keyboard shortcut',
+    description: 'This is the keyboard shortcut to start/stop the video from floating (default: ctrl+shift+h).',
     type: "string",
     default: "ctrl+shift+h"
   },
@@ -758,44 +763,50 @@ const main = async () => {
     }
 
     // play/pause
-    logseq.App.registerCommandPalette({
-      key: `helium-play-pause`,
-      label: "Play/pause the video",
-      keybinding: {
-        binding: logseq.settings.KeyboardShortcut_PlayPause,
-        mode: "global",
-      }
-    }, async () => {
-      playPauseControls();
-    });
+    if (logseq.settings.KeyboardShortcut_PlayPause != "NA") {
+      logseq.App.registerCommandPalette({
+        key: `helium-play-pause`,
+        label: "Play/pause the video",
+        keybinding: {
+          binding: logseq.settings.KeyboardShortcut_PlayPause,
+          mode: "global",
+        }
+      }, async () => {
+        playPauseControls();
+      });
+    }
     
     // skip forward (fast forward)
-    logseq.App.registerCommandPalette({
-      key: `helium-skip-controls-FF`,
-      label: "Fast forward the video",
-      keybinding: {
-        binding: logseq.settings.KeyboardShortcut_SkipForward,
-        mode: "global",
-      }
-    }, async () => {
-      logseq.Editor.exitEditingMode(true);
-      skip = "forward";
-      skipControls();
-    });
+    if (logseq.settings.KeyboardShortcut_SkipForward != "NA") {
+      logseq.App.registerCommandPalette({
+        key: `helium-skip-controls-FF`,
+        label: "Fast forward the video",
+        keybinding: {
+          binding: logseq.settings.KeyboardShortcut_SkipForward,
+          mode: "global",
+        }
+      }, async () => {
+        logseq.Editor.exitEditingMode(true);
+        skip = "forward";
+        skipControls();
+      });
+    }
 
-    // skip backward (rewind)
-    logseq.App.registerCommandPalette({
-      key: `helium-skip-controls-R`,
-      label: "Rewind the video",
-      keybinding: {
-        binding: logseq.settings.KeyboardShortcut_SkipBackward,
-        mode: "global",
-      }
-    }, async () => {
-      logseq.Editor.exitEditingMode(true);
-      skip = "backward";
-      skipControls();
-    });
+    if (logseq.settings.KeyboardShortcut_SkipBackward != "NA") {
+      // skip backward (rewind)
+      logseq.App.registerCommandPalette({
+        key: `helium-skip-controls-R`,
+        label: "Rewind the video",
+        keybinding: {
+          binding: logseq.settings.KeyboardShortcut_SkipBackward,
+          mode: "global",
+        }
+      }, async () => {
+        logseq.Editor.exitEditingMode(true);
+        skip = "backward";
+        skipControls();
+      });
+    }
   }
   registerKeyboardShortcuts();
 
