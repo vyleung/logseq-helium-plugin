@@ -69,6 +69,13 @@ const settings = [
     description: "This is the custom playback speed increment for videos (default: 0.25)",
     type: "number",
     default: 0.25
+  },
+  {
+    key: "DefaultPlaybackSpeed",
+    title: "Default playback speed for videos",
+    description: "This is the playback speed for videos (default: 1; min: 0.25, max: 2)",
+    type: "number",
+    default: 1
   }
 ]
 logseq.useSettingsSchema(settings);
@@ -365,11 +372,12 @@ function startFloat(e) {
           }
         `)
 
-        // show appropriate play/pause icon based on whether the video is paused or not
+        // set default playback speed for videos and show appropriate play/pause icon based on whether the video is paused or not
         setDriftlessTimeout(() => {
           // youtube videos
           if (video_id.includes("youtube-player")) {
             current_video = parent.window.YT.get(video_id);
+            current_video.setPlaybackRate(parseInt(logseq.settings.DefaultPlaybackSpeed));
             
             // if the video is paused or cued
             if ((current_video.getPlayerState() == 2)|| (current_video.getPlayerState() == 5)) {
@@ -384,6 +392,7 @@ function startFloat(e) {
           // local videos
           else if (video_id.includes("helium-localVideo")) {
             current_video = parent.document.getElementById(`${video_id}`);
+            current_video.playbackRate = parseInt(logseq.settings.DefaultPlaybackSpeed);
 
             if (current_video.paused) {
               showPlayButton();

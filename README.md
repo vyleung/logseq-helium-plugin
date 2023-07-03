@@ -20,7 +20,7 @@
 ![logseq-helium-plugin main demo (keyboard shortcut)](screenshots/logseq_helium_main_demo_keyboardShortcut.gif)  
 - v.2.0.x: Using keyboard shortcuts to play/pause the video and skip forward/backward in the video  
 ![logseq-helium-plugin v.2.0.0 demo](screenshots/logseq_helium_v.2.0.0.gif)
-- v.2.1.x: Adjust the video's playback speed  
+- v.2.1.x: Adjust the video's playback speed and set a default playback speed for videos
 ![logseq-helium-plugin v.2.1.0 demo](screenshots/logseq_helium_v.2.1.0.gif)
 
 ## Settings
